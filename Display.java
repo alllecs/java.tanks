@@ -1,6 +1,8 @@
 import javax.swing.JFrame;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 
 public abstract class Display extends Tanks{
 
@@ -17,10 +19,16 @@ public abstract class Display extends Tanks{
 		// exit whith close window
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		content = new Canvas();
+		content = new Canvas() {
+			public void paint(Graphics g) {
+				super.paint(g);
+				render(g);
+			}				
+		};
 		// size window
 		Dimension size = new Dimension(width, height);
 		content.setPreferredSize(size);
+		content.setBackground(Color.black);
 
 		// пользователь не может менять размер окна
 		window.setResizable(false);
@@ -33,4 +41,14 @@ public abstract class Display extends Tanks{
 		// окно видимо
 		window.setVisible(true);
 	}
+
+	public static void render() {
+		content.repaint();
+	}
+
+	private static void render(Graphics g) {
+		g.setColor(Color.white);
+		g.fillOval(300 - 50, 300 - 50, 100, 100);
+	}
+
 }
