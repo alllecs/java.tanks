@@ -5,8 +5,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Arrays;
-
+import java.awt.image.BufferStrategy;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 public abstract class Display extends Tanks{
 
@@ -21,7 +24,9 @@ public abstract class Display extends Tanks{
 	private static int clearColor;
 	private static float delta = 0;
 
-	public static void create(int width, int height, String title, int _clearColor) {
+	private static BufferStrategy bufferStrategy;
+
+	public static void create(int width, int height, String title, int _clearColor, int numBuffer) {
 
 		if (created)
 			return;
@@ -52,6 +57,9 @@ public abstract class Display extends Tanks{
 		// достать объект с изображения
 		bufferGraphics = buffer.getGraphics();
 		clearColor = _clearColor;
+		// стратегия буферезации
+		content.createBufferStrategy(numBuffer);
+		bufferStrategy = content.getBufferStrategy();
 
 		created = true;
 
@@ -65,15 +73,19 @@ public abstract class Display extends Tanks{
 	public static void render() {
 		bufferGraphics.setColor(new Color(0xff0000ff));
 		bufferGraphics.fillOval((int)(250 + (Math.sin(delta) * 200)), 250, 100, 100);
+
+		((Graphics2D)bufferGraphics).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		delta += 0.02f;
+		
 		
 	}
 
 	public static void swapBuffers() {
-		// достали графику
-		Graphics g = content.getGraphics();
+		// следующий по очереди графический объект
+		Graphics g = bufferStrategy.getDrawGraphics();
 		// что хотим нарисовать, координаты, ширина и высота
 		g.drawImage(buffer, 0, 0, null);
+		bufferStrategy.show();
 	}
 
 }
